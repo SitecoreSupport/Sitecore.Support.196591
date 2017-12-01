@@ -12,6 +12,7 @@
   using Sitecore.Pipelines.HttpRequest;
   using Sitecore.SecurityModel;
   using Sitecore.Sites;
+  using Sitecore.Web;
   using System;
   using System.Linq;
 
@@ -36,8 +37,16 @@
         string str2 = (site != null) ? site.RootPath : string.Empty;
         if ((item == null) && !args.PermissionDenied)
         {
-          path = args.LocalPath;
-          item = args.GetItem(path);
+          string languageName = WebUtil.GetQueryString("la");
+          if (!String.IsNullOrEmpty(languageName))
+          {
+            item = Context.Database.GetItem(args.LocalPath, Language.Parse(languageName));
+          }
+          else
+          {
+            path = args.LocalPath;
+            item = args.GetItem(path);
+          }
         }
         if ((item == null) && !args.PermissionDenied)
         {
